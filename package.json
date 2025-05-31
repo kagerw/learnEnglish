@@ -1,4 +1,7 @@
 {
+  "name": "learn-english",
+  "version": "0.1.0",
+  "private": true,
   "dependencies": {
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
@@ -8,6 +11,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test"
+  },
+  "engines": {
+    "node": "18.x"
   },
   "browserslist": {
     "production": [
