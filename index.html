@@ -1,28 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Zap, Clock, Target, Star, RotateCcw, BookOpen, Award, Lightbulb, CheckCircle, XCircle, Trophy, Upload, FileText, AlertCircle } from 'lucide-react';
 
-// ’PŒêƒf[ƒ^ƒx[ƒXiŒã‚ÅŠg’£‰Â”\j
+// å˜èªãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ï¼ˆå¾Œã§æ‹¡å¼µå¯èƒ½ï¼‰
 const vocabularyData = [
-  { english: "abundance", japanese: "–L•xA‘å—Ê", difficulty: "advanced", hint: "a ‚©‚çn‚Ü‚éA‚½‚­‚³‚ñ‚ ‚é‚±‚Æ", example: "There is an abundance of fresh fruit in the market.", example_jp: "sê‚É‚ÍV‘N‚È‰Ê•¨‚ª–L•x‚É‚ ‚éB" },
-  { english: "collaborate", japanese: "‹¦—Í‚·‚é", difficulty: "intermediate", hint: "c ‚©‚çn‚Ü‚éAˆê‚É“­‚­‚±‚Æ", example: "We need to collaborate with other teams to finish this project.", example_jp: "‚±‚ÌƒvƒƒWƒFƒNƒg‚ğI‚í‚ç‚¹‚é‚½‚ß‚É‘¼‚Ìƒ`[ƒ€‚Æ‹¦—Í‚·‚é•K—v‚ª‚ ‚éB" },
-  { english: "devastating", japanese: "”j‰ó“I‚È", difficulty: "advanced", hint: "d ‚©‚çn‚Ü‚éA‘å‚«‚È”íŠQ‚ğ—^‚¦‚é", example: "The earthquake had a devastating effect on the city.", example_jp: "’nk‚ÍŠX‚É”j‰ó“I‚È‰e‹¿‚ğ—^‚¦‚½B" },
-  { english: "enhance", japanese: "Œüã‚³‚¹‚é", difficulty: "intermediate", hint: "e ‚©‚çn‚Ü‚éA‚æ‚è—Ç‚­‚·‚é‚±‚Æ", example: "This software will enhance your productivity at work.", example_jp: "‚±‚Ìƒ\ƒtƒgƒEƒFƒA‚ÍEê‚Å‚Ì¶Y«‚ğŒüã‚³‚¹‚é‚Å‚µ‚å‚¤B" },
-  { english: "fundamental", japanese: "Šî–{“I‚È", difficulty: "intermediate", hint: "f ‚©‚çn‚Ü‚éA“y‘ä‚Æ‚È‚é", example: "Understanding grammar is fundamental to learning any language.", example_jp: "•¶–@‚ğ—‰ğ‚·‚é‚±‚Æ‚Í‚Ç‚ÌŒ¾Œê‚ğŠw‚Ô‚É‚àŠî–{“I‚È‚±‚Æ‚Å‚·B" },
-  { english: "genuine", japanese: "–{•¨‚ÌA^‚Ì", difficulty: "intermediate", hint: "g ‚©‚çn‚Ü‚éA‹U•¨‚Å‚È‚¢", example: "She showed genuine concern for her friend's wellbeing.", example_jp: "”Ş—‚Í—Fl‚ÌŒ’N‚ğS‚©‚çS”z‚µ‚Ä‚¢‚½B" },
-  { english: "hypothesis", japanese: "‰¼à", difficulty: "advanced", hint: "h ‚©‚çn‚Ü‚éA‰ÈŠw“I‚È„‘ª", example: "The scientist tested his hypothesis through careful experiments.", example_jp: "‰ÈŠwÒ‚ÍTd‚ÈÀŒ±‚ğ’Ê‚¶‚Ä‰¼à‚ğŒŸØ‚µ‚½B" },
-  { english: "inevitable", japanese: "”ğ‚¯‚ç‚ê‚È‚¢", difficulty: "advanced", hint: "i ‚©‚çn‚Ü‚éA•K‚¸‹N‚±‚é‚±‚Æ", example: "Change is inevitable in today's fast-paced world.", example_jp: "¡“ú‚Ì‹}‘¬‚É•Ï‰»‚·‚é¢ŠE‚Å‚Í•Ï‰»‚Í”ğ‚¯‚ç‚ê‚È‚¢B" },
-  { english: "justify", japanese: "³“–‰»‚·‚é", difficulty: "intermediate", hint: "j ‚©‚çn‚Ü‚éA——R‚ğà–¾‚·‚é", example: "Can you justify spending so much money on this project?", example_jp: "‚±‚ÌƒvƒƒWƒFƒNƒg‚É‚»‚ñ‚È‚É‚¨‹à‚ğ‚©‚¯‚é‚±‚Æ‚ğ³“–‰»‚Å‚«‚Ü‚·‚©H" },
-  { english: "knowledge", japanese: "’m¯", difficulty: "basic", hint: "k ‚©‚çn‚Ü‚éAŠw‚ñ‚¾î•ñ", example: "His knowledge of history is quite impressive.", example_jp: "”Ş‚Ì—ğj‚Ì’m¯‚Í‚©‚È‚èˆóÛ“I‚¾B" },
-  { english: "limitation", japanese: "§ŒÀ", difficulty: "intermediate", hint: "l ‚©‚çn‚Ü‚éA§–ñ‚·‚é‚±‚Æ", example: "Budget limitation forced us to reduce the project scope.", example_jp: "—\Z‚Ì§ŒÀ‚É‚æ‚èAƒvƒƒWƒFƒNƒg‚Ì”ÍˆÍ‚ğk¬‚¹‚´‚é‚ğ“¾‚È‚©‚Á‚½B" },
-  { english: "magnificent", japanese: "‘s‘å‚È", difficulty: "intermediate", hint: "m ‚©‚çn‚Ü‚éA‘f°‚ç‚µ‚­—§”h‚È", example: "The view from the mountain top was absolutely magnificent.", example_jp: "R’¸‚©‚ç‚Ì’­‚ß‚Í–{“–‚É‘s‘å‚¾‚Á‚½B" },
-  { english: "negotiate", japanese: "ŒğÂ‚·‚é", difficulty: "intermediate", hint: "n ‚©‚çn‚Ü‚éA˜b‚µ‡‚¢‚ÅŒˆ‚ß‚é", example: "The union will negotiate with management about salary increases.", example_jp: "‘g‡‚Í‹‹—^‘Šz‚É‚Â‚¢‚ÄŒo‰cw‚ÆŒğÂ‚·‚éB" },
-  { english: "opportunity", japanese: "‹@‰ï", difficulty: "basic", hint: "o ‚©‚çn‚Ü‚éAƒ`ƒƒƒ“ƒX", example: "This internship is a great opportunity to gain work experience.", example_jp: "‚±‚ÌƒCƒ“ƒ^[ƒ“ƒVƒbƒv‚ÍE–±ŒoŒ±‚ğÏ‚ŞâD‚Ì‹@‰ï‚¾B" },
-  { english: "perspective", japanese: "‹“_", difficulty: "intermediate", hint: "p ‚©‚çn‚Ü‚éA•¨–‚ÌŒ©•û", example: "Looking at the problem from a different perspective might help.", example_jp: "ˆÙ‚È‚é‹“_‚©‚ç–â‘è‚ğŒ©‚é‚±‚Æ‚ª–ğ—§‚Â‚©‚à‚µ‚ê‚È‚¢B" },
-  { english: "quality", japanese: "•i¿", difficulty: "basic", hint: "q ‚©‚çn‚Ü‚éA•¨‚Ì—Ç‚³", example: "The quality of their customer service is excellent.", example_jp: "”Ş‚ç‚ÌƒJƒXƒ^ƒ}[ƒT[ƒrƒX‚Ì•i¿‚Í‘f°‚ç‚µ‚¢B" },
-  { english: "reasonable", japanese: "‡—“I‚È", difficulty: "intermediate", hint: "r ‚©‚çn‚Ü‚éA—‚É‚©‚È‚Á‚½", example: "Your request seems reasonable and we can accommodate it.", example_jp: "‚ ‚È‚½‚Ì—v‹‚Í‡—“I‚Év‚¦‚é‚Ì‚Å‘Î‰‚Å‚«‚Ü‚·B" },
-  { english: "significant", japanese: "d—v‚È", difficulty: "intermediate", hint: "s ‚©‚çn‚Ü‚éA‘åØ‚ÈˆÓ–¡‚ª‚ ‚é", example: "There has been a significant improvement in sales this quarter.", example_jp: "¡l”¼Šú‚Í”„ã‚É‘å‚«‚È‰ü‘P‚ª‚ ‚Á‚½B" },
-  { english: "tremendous", japanese: "“r•û‚à‚È‚¢", difficulty: "advanced", hint: "t ‚©‚çn‚Ü‚éA‚Æ‚Ä‚à‘å‚«‚È", example: "The team made a tremendous effort to meet the deadline.", example_jp: "ƒ`[ƒ€‚Í’÷Ø‚ÉŠÔ‚É‡‚í‚¹‚é‚½‚ß‚É“r•û‚à‚È‚¢“w—Í‚ğ‚µ‚½B" },
-  { english: "understand", japanese: "—‰ğ‚·‚é", difficulty: "basic", hint: "u ‚©‚çn‚Ü‚éAˆÓ–¡‚ª•ª‚©‚é", example: "Do you understand the instructions for this assignment?", example_jp: "‚±‚Ì‰Û‘è‚Ìw¦‚ğ—‰ğ‚µ‚Ä‚¢‚Ü‚·‚©H" }
+  { english: "abundance", japanese: "è±Šå¯Œã€å¤§é‡", difficulty: "advanced", hint: "a ã‹ã‚‰å§‹ã¾ã‚‹ã€ãŸãã•ã‚“ã‚ã‚‹ã“ã¨", example: "There is an abundance of fresh fruit in the market.", example_jp: "å¸‚å ´ã«ã¯æ–°é®®ãªæœç‰©ãŒè±Šå¯Œã«ã‚ã‚‹ã€‚" },
+  { english: "collaborate", japanese: "å”åŠ›ã™ã‚‹", difficulty: "intermediate", hint: "c ã‹ã‚‰å§‹ã¾ã‚‹ã€ä¸€ç·’ã«åƒãã“ã¨", example: "We need to collaborate with other teams to finish this project.", example_jp: "ã“ã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã‚’çµ‚ã‚ã‚‰ã›ã‚‹ãŸã‚ã«ä»–ã®ãƒãƒ¼ãƒ ã¨å”åŠ›ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚" },
+  { english: "devastating", japanese: "ç ´å£Šçš„ãª", difficulty: "advanced", hint: "d ã‹ã‚‰å§‹ã¾ã‚‹ã€å¤§ããªè¢«å®³ã‚’ä¸ãˆã‚‹", example: "The earthquake had a devastating effect on the city.", example_jp: "åœ°éœ‡ã¯è¡—ã«ç ´å£Šçš„ãªå½±éŸ¿ã‚’ä¸ãˆãŸã€‚" },
+  { english: "enhance", japanese: "å‘ä¸Šã•ã›ã‚‹", difficulty: "intermediate", hint: "e ã‹ã‚‰å§‹ã¾ã‚‹ã€ã‚ˆã‚Šè‰¯ãã™ã‚‹ã“ã¨", example: "This software will enhance your productivity at work.", example_jp: "ã“ã®ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢ã¯è·å ´ã§ã®ç”Ÿç”£æ€§ã‚’å‘ä¸Šã•ã›ã‚‹ã§ã—ã‚‡ã†ã€‚" },
+  { english: "fundamental", japanese: "åŸºæœ¬çš„ãª", difficulty: "intermediate", hint: "f ã‹ã‚‰å§‹ã¾ã‚‹ã€åœŸå°ã¨ãªã‚‹", example: "Understanding grammar is fundamental to learning any language.", example_jp: "æ–‡æ³•ã‚’ç†è§£ã™ã‚‹ã“ã¨ã¯ã©ã®è¨€èªã‚’å­¦ã¶ã«ã‚‚åŸºæœ¬çš„ãªã“ã¨ã§ã™ã€‚" },
+  { english: "genuine", japanese: "æœ¬ç‰©ã®ã€çœŸã®", difficulty: "intermediate", hint: "g ã‹ã‚‰å§‹ã¾ã‚‹ã€å½ç‰©ã§ãªã„", example: "She showed genuine concern for her friend's wellbeing.", example_jp: "å½¼å¥³ã¯å‹äººã®å¥åº·ã‚’å¿ƒã‹ã‚‰å¿ƒé…ã—ã¦ã„ãŸã€‚" },
+  { english: "hypothesis", japanese: "ä»®èª¬", difficulty: "advanced", hint: "h ã‹ã‚‰å§‹ã¾ã‚‹ã€ç§‘å­¦çš„ãªæ¨æ¸¬", example: "The scientist tested his hypothesis through careful experiments.", example_jp: "ç§‘å­¦è€…ã¯æ…é‡ãªå®Ÿé¨“ã‚’é€šã˜ã¦ä»®èª¬ã‚’æ¤œè¨¼ã—ãŸã€‚" },
+  { english: "inevitable", japanese: "é¿ã‘ã‚‰ã‚Œãªã„", difficulty: "advanced", hint: "i ã‹ã‚‰å§‹ã¾ã‚‹ã€å¿…ãšèµ·ã“ã‚‹ã“ã¨", example: "Change is inevitable in today's fast-paced world.", example_jp: "ä»Šæ—¥ã®æ€¥é€Ÿã«å¤‰åŒ–ã™ã‚‹ä¸–ç•Œã§ã¯å¤‰åŒ–ã¯é¿ã‘ã‚‰ã‚Œãªã„ã€‚" },
+  { english: "justify", japanese: "æ­£å½“åŒ–ã™ã‚‹", difficulty: "intermediate", hint: "j ã‹ã‚‰å§‹ã¾ã‚‹ã€ç†ç”±ã‚’èª¬æ˜ã™ã‚‹", example: "Can you justify spending so much money on this project?", example_jp: "ã“ã®ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã«ãã‚“ãªã«ãŠé‡‘ã‚’ã‹ã‘ã‚‹ã“ã¨ã‚’æ­£å½“åŒ–ã§ãã¾ã™ã‹ï¼Ÿ" },
+  { english: "knowledge", japanese: "çŸ¥è­˜", difficulty: "basic", hint: "k ã‹ã‚‰å§‹ã¾ã‚‹ã€å­¦ã‚“ã æƒ…å ±", example: "His knowledge of history is quite impressive.", example_jp: "å½¼ã®æ­´å²ã®çŸ¥è­˜ã¯ã‹ãªã‚Šå°è±¡çš„ã ã€‚" },
+  { english: "limitation", japanese: "åˆ¶é™", difficulty: "intermediate", hint: "l ã‹ã‚‰å§‹ã¾ã‚‹ã€åˆ¶ç´„ã™ã‚‹ã“ã¨", example: "Budget limitation forced us to reduce the project scope.", example_jp: "äºˆç®—ã®åˆ¶é™ã«ã‚ˆã‚Šã€ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã®ç¯„å›²ã‚’ç¸®å°ã›ã–ã‚‹ã‚’å¾—ãªã‹ã£ãŸã€‚" },
+  { english: "magnificent", japanese: "å£®å¤§ãª", difficulty: "intermediate", hint: "m ã‹ã‚‰å§‹ã¾ã‚‹ã€ç´ æ™´ã‚‰ã—ãç«‹æ´¾ãª", example: "The view from the mountain top was absolutely magnificent.", example_jp: "å±±é ‚ã‹ã‚‰ã®çœºã‚ã¯æœ¬å½“ã«å£®å¤§ã ã£ãŸã€‚" },
+  { english: "negotiate", japanese: "äº¤æ¸‰ã™ã‚‹", difficulty: "intermediate", hint: "n ã‹ã‚‰å§‹ã¾ã‚‹ã€è©±ã—åˆã„ã§æ±ºã‚ã‚‹", example: "The union will negotiate with management about salary increases.", example_jp: "çµ„åˆã¯çµ¦ä¸å¢—é¡ã«ã¤ã„ã¦çµŒå–¶é™£ã¨äº¤æ¸‰ã™ã‚‹ã€‚" },
+  { english: "opportunity", japanese: "æ©Ÿä¼š", difficulty: "basic", hint: "o ã‹ã‚‰å§‹ã¾ã‚‹ã€ãƒãƒ£ãƒ³ã‚¹", example: "This internship is a great opportunity to gain work experience.", example_jp: "ã“ã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ³ã‚·ãƒƒãƒ—ã¯è·å‹™çµŒé¨“ã‚’ç©ã‚€çµ¶å¥½ã®æ©Ÿä¼šã ã€‚" },
+  { english: "perspective", japanese: "è¦–ç‚¹", difficulty: "intermediate", hint: "p ã‹ã‚‰å§‹ã¾ã‚‹ã€ç‰©äº‹ã®è¦‹æ–¹", example: "Looking at the problem from a different perspective might help.", example_jp: "ç•°ãªã‚‹è¦–ç‚¹ã‹ã‚‰å•é¡Œã‚’è¦‹ã‚‹ã“ã¨ãŒå½¹ç«‹ã¤ã‹ã‚‚ã—ã‚Œãªã„ã€‚" },
+  { english: "quality", japanese: "å“è³ª", difficulty: "basic", hint: "q ã‹ã‚‰å§‹ã¾ã‚‹ã€ç‰©ã®è‰¯ã•", example: "The quality of their customer service is excellent.", example_jp: "å½¼ã‚‰ã®ã‚«ã‚¹ã‚¿ãƒãƒ¼ã‚µãƒ¼ãƒ“ã‚¹ã®å“è³ªã¯ç´ æ™´ã‚‰ã—ã„ã€‚" },
+  { english: "reasonable", japanese: "åˆç†çš„ãª", difficulty: "intermediate", hint: "r ã‹ã‚‰å§‹ã¾ã‚‹ã€ç†ã«ã‹ãªã£ãŸ", example: "Your request seems reasonable and we can accommodate it.", example_jp: "ã‚ãªãŸã®è¦æ±‚ã¯åˆç†çš„ã«æ€ãˆã‚‹ã®ã§å¯¾å¿œã§ãã¾ã™ã€‚" },
+  { english: "significant", japanese: "é‡è¦ãª", difficulty: "intermediate", hint: "s ã‹ã‚‰å§‹ã¾ã‚‹ã€å¤§åˆ‡ãªæ„å‘³ãŒã‚ã‚‹", example: "There has been a significant improvement in sales this quarter.", example_jp: "ä»Šå››åŠæœŸã¯å£²ä¸Šã«å¤§ããªæ”¹å–„ãŒã‚ã£ãŸã€‚" },
+  { english: "tremendous", japanese: "é€”æ–¹ã‚‚ãªã„", difficulty: "advanced", hint: "t ã‹ã‚‰å§‹ã¾ã‚‹ã€ã¨ã¦ã‚‚å¤§ããª", example: "The team made a tremendous effort to meet the deadline.", example_jp: "ãƒãƒ¼ãƒ ã¯ç· åˆ‡ã«é–“ã«åˆã‚ã›ã‚‹ãŸã‚ã«é€”æ–¹ã‚‚ãªã„åŠªåŠ›ã‚’ã—ãŸã€‚" },
+  { english: "understand", japanese: "ç†è§£ã™ã‚‹", difficulty: "basic", hint: "u ã‹ã‚‰å§‹ã¾ã‚‹ã€æ„å‘³ãŒåˆ†ã‹ã‚‹", example: "Do you understand the instructions for this assignment?", example_jp: "ã“ã®èª²é¡Œã®æŒ‡ç¤ºã‚’ç†è§£ã—ã¦ã„ã¾ã™ã‹ï¼Ÿ" }
 ];
 
 const VocabularyGameApp = () => {
@@ -48,46 +48,46 @@ const VocabularyGameApp = () => {
   const [uploadedFileName, setUploadedFileName] = useState('');
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
-  const [encoding, setEncoding] = useState('Shift_JIS'); // ƒfƒtƒHƒ‹ƒg‚ğShift_JIS‚É
-  const [maxQuestions, setMaxQuestions] = useState(10); // –â‘è”§ŒÀ
-  const [options, setOptions] = useState([]); // 4‘ğ‚Ì‘I‘ğˆ
-  const [selectedChoice, setSelectedChoice] = useState(null); // ‘I‘ğ‚µ‚½‘I‘ğˆ
-  const [wrongAnswers, setWrongAnswers] = useState([]); // ŠÔˆá‚¦‚½’PŒê‹L˜^
+  const [encoding, setEncoding] = useState('Shift_JIS'); // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã‚’Shift_JISã«
+  const [maxQuestions, setMaxQuestions] = useState(10); // å•é¡Œæ•°åˆ¶é™
+  const [options, setOptions] = useState([]); // 4æŠã®é¸æŠè‚¢
+  const [selectedChoice, setSelectedChoice] = useState(null); // é¸æŠã—ãŸé¸æŠè‚¢
+  const [wrongAnswers, setWrongAnswers] = useState([]); // é–“é•ãˆãŸå˜èªè¨˜éŒ²
   const inputRef = useRef(null);
   const timerRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // ƒ^ƒCƒ}[ŠÇ—
+  // ã‚¿ã‚¤ãƒãƒ¼ç®¡ç†
   useEffect(() => {
     if (gameStarted && !showResult && currentQuestion && timeLeft > 0) {
       timerRef.current = setTimeout(() => {
         setTimeLeft(prev => prev - 1);
       }, 1000);
     } else if (timeLeft === 0 && currentQuestion) {
-      // ƒ^ƒCƒ€ƒI[ƒo[
+      // ã‚¿ã‚¤ãƒ ã‚ªãƒ¼ãƒãƒ¼
       handleTimeOut();
     }
     return () => clearTimeout(timerRef.current);
   }, [timeLeft, gameStarted, showResult, currentQuestion]);
 
-  // ƒQ[ƒ€ŠJnƒtƒ‰ƒO‚ğŠÄ‹‚µ‚Ä–â‘è¶¬
+  // ã‚²ãƒ¼ãƒ é–‹å§‹ãƒ•ãƒ©ã‚°ã‚’ç›£è¦–ã—ã¦å•é¡Œç”Ÿæˆ
   useEffect(() => {
     if (gameStarted && !showResult && usedQuestions.length === 0 && !currentQuestion) {
       generateQuestion(true);
     }
   }, [gameStarted, showResult, usedQuestions, currentQuestion]);
 
-  // ƒOƒ[ƒoƒ‹ƒL[ƒ{[ƒhƒCƒxƒ“ƒgŠÇ—
+  // ã‚°ãƒ­ãƒ¼ãƒãƒ«ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰ã‚¤ãƒ™ãƒ³ãƒˆç®¡ç†
   useEffect(() => {
     const handleGlobalKeyPress = (e) => {
       if (!gameStarted || showResult) return;
       
       if (e.key === 'Enter') {
         if (isCorrect === null && questionType === 'writing' && userAnswer.trim() !== '') {
-          // –¢‰ñ“š‚Å“ü—Í‚ª‚ ‚éê‡‚Í‰ñ“š
+          // æœªå›ç­”ã§å…¥åŠ›ãŒã‚ã‚‹å ´åˆã¯å›ç­”
           checkAnswer();
         } else if (isCorrect !== null) {
-          // Šù‚É‰ñ“šÏ‚İ‚Ìê‡‚ÍŸ‚Ì–â‘è‚Ö
+          // æ—¢ã«å›ç­”æ¸ˆã¿ã®å ´åˆã¯æ¬¡ã®å•é¡Œã¸
           goToNextQuestion();
         }
       }
@@ -97,13 +97,13 @@ const VocabularyGameApp = () => {
     return () => document.removeEventListener('keydown', handleGlobalKeyPress);
   }, [gameStarted, showResult, isCorrect, questionType, userAnswer]);
 
-  // CSVƒtƒ@ƒCƒ‹ˆ—
+  // CSVãƒ•ã‚¡ã‚¤ãƒ«å‡¦ç†
   const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
     if (!file.name.endsWith('.csv')) {
-      setUploadError('CSVƒtƒ@ƒCƒ‹‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢');
+      setUploadError('CSVãƒ•ã‚¡ã‚¤ãƒ«ã‚’é¸æŠã—ã¦ãã ã•ã„');
       return;
     }
 
@@ -115,14 +115,14 @@ const VocabularyGameApp = () => {
         const reader = new FileReader();
         reader.onload = (e) => resolve(e.target.result);
         reader.onerror = (e) => reject(e);
-        reader.readAsText(file, encoding); // ‘I‘ğ‚³‚ê‚½ƒGƒ“ƒR[ƒh‚ğg—p
+        reader.readAsText(file, encoding); // é¸æŠã•ã‚ŒãŸã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã‚’ä½¿ç”¨
       });
 
-      // CSVƒp[ƒXiƒVƒ“ƒvƒ‹‚ÈÀ‘•j
+      // CSVãƒ‘ãƒ¼ã‚¹ï¼ˆã‚·ãƒ³ãƒ—ãƒ«ãªå®Ÿè£…ï¼‰
       const lines = fileContent.split('\n').filter(line => line.trim());
       const words = [];
 
-      // 1s–Ú‚Íƒwƒbƒ_[‚Æ‚µ‚ÄƒXƒLƒbƒv
+      // 1è¡Œç›®ã¯ãƒ˜ãƒƒãƒ€ãƒ¼ã¨ã—ã¦ã‚¹ã‚­ãƒƒãƒ—
       for (let i = 1; i < lines.length; i++) {
         const line = lines[i].trim();
         if (!line) continue;
@@ -130,12 +130,12 @@ const VocabularyGameApp = () => {
         const [english, japanese, example, example_jp] = line.split(',').map(item => item ? item.trim() : '');
         
         if (!english || !japanese) {
-          setUploadError(`${i + 1}s–Ú‚ÌƒtƒH[ƒ}ƒbƒg‚ª³‚µ‚­‚ ‚è‚Ü‚¹‚ñi‰p’PŒê‚Æ“ú–{Œê‚Í•K{j`);
+          setUploadError(`${i + 1}è¡Œç›®ã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãŒæ­£ã—ãã‚ã‚Šã¾ã›ã‚“ï¼ˆè‹±å˜èªã¨æ—¥æœ¬èªã¯å¿…é ˆï¼‰`);
           setIsUploading(false);
           return;
         }
 
-        // “ïˆÕ“x©“®”»’èi•¶š”‚Æ‚æ‚­g‚í‚ê‚éŒêœb‚Å”»’fj
+        // é›£æ˜“åº¦è‡ªå‹•åˆ¤å®šï¼ˆæ–‡å­—æ•°ã¨ã‚ˆãä½¿ã‚ã‚Œã‚‹èªå½™ã§åˆ¤æ–­ï¼‰
         let difficulty = 'basic';
         if (english.length > 8 || /[A-Z].*[A-Z]/.test(english)) {
           difficulty = 'advanced';
@@ -143,21 +143,21 @@ const VocabularyGameApp = () => {
           difficulty = 'intermediate';
         }
 
-        // ƒqƒ“ƒg©“®¶¬
-        const hint = `${english.charAt(0).toLowerCase()} ‚©‚çn‚Ü‚é${english.length}•¶š‚Ì’PŒê`;
+        // ãƒ’ãƒ³ãƒˆè‡ªå‹•ç”Ÿæˆ
+        const hint = `${english.charAt(0).toLowerCase()} ã‹ã‚‰å§‹ã¾ã‚‹${english.length}æ–‡å­—ã®å˜èª`;
 
         words.push({
           english: english.toLowerCase(),
           japanese,
-          example: example || '', // —á•¶‚ª‹ó‚Ìê‡‚à‚ ‚è“¾‚é
-          example_jp: example_jp || '', // —á•¶‚Ì“ú–{Œê–ó‚ª‹ó‚Ìê‡‚à‚ ‚è“¾‚é
+          example: example || '', // ä¾‹æ–‡ãŒç©ºã®å ´åˆã‚‚ã‚ã‚Šå¾—ã‚‹
+          example_jp: example_jp || '', // ä¾‹æ–‡ã®æ—¥æœ¬èªè¨³ãŒç©ºã®å ´åˆã‚‚ã‚ã‚Šå¾—ã‚‹
           difficulty,
           hint
         });
       }
 
       if (words.length === 0) {
-        setUploadError('—LŒø‚È’PŒêƒf[ƒ^‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ‚Å‚µ‚½');
+        setUploadError('æœ‰åŠ¹ãªå˜èªãƒ‡ãƒ¼ã‚¿ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã§ã—ãŸ');
         setIsUploading(false);
         return;
       }
@@ -167,39 +167,39 @@ const VocabularyGameApp = () => {
       setIsUploading(false);
 
     } catch (error) {
-      setUploadError('ƒtƒ@ƒCƒ‹‚Ì“Ç‚İ‚İ‚É¸”s‚µ‚Ü‚µ‚½');
+      setUploadError('ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿ã«å¤±æ•—ã—ã¾ã—ãŸ');
       setIsUploading(false);
     }
   };
 
-  // ƒfƒtƒHƒ‹ƒgƒf[ƒ^‚É–ß‚·
+  // ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ‡ãƒ¼ã‚¿ã«æˆ»ã™
   const resetToDefaultData = () => {
     setCurrentVocabularyData(vocabularyData);
     setUploadedFileName('');
     setUploadError('');
-    setEncoding('Shift_JIS'); // ƒGƒ“ƒR[ƒh‚àƒŠƒZƒbƒg
+    setEncoding('Shift_JIS'); // ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã‚‚ãƒªã‚»ãƒƒãƒˆ
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
   };
 
-  // —á•¶‚©‚ç’PŒê‚ğ‹ó—“‚É‚·‚é
+  // ä¾‹æ–‡ã‹ã‚‰å˜èªã‚’ç©ºæ¬„ã«ã™ã‚‹
   const createExampleWithBlank = (example, targetWord) => {
     if (!example) return '';
     
-    // ‘å•¶š¬•¶š‚ğ–³‹‚µ‚Ä’PŒê‚ğŒŸõ‚µA‹ó—“‚É’u‚«Š·‚¦‚é
+    // å¤§æ–‡å­—å°æ–‡å­—ã‚’ç„¡è¦–ã—ã¦å˜èªã‚’æ¤œç´¢ã—ã€ç©ºæ¬„ã«ç½®ãæ›ãˆã‚‹
     const regex = new RegExp(`\\b${targetWord}\\b`, 'gi');
     const blankLength = targetWord.length;
-    const blank = '_'.repeat(Math.max(3, Math.min(blankLength, 8))); // 3-8•¶š‚Ì‹ó—“
+    const blank = '_'.repeat(Math.max(3, Math.min(blankLength, 8))); // 3-8æ–‡å­—ã®ç©ºæ¬„
     
     return example.replace(regex, `(${blank})`);
   };
 
-  // V‚µ‚¢–â‘è‚ğ¶¬
+  // æ–°ã—ã„å•é¡Œã‚’ç”Ÿæˆ
   const generateQuestion = (forceStart = false) => {
-    // ƒQ[ƒ€ŠJn‚Í§ŒÀƒ`ƒFƒbƒN‚ğƒXƒLƒbƒv
+    // ã‚²ãƒ¼ãƒ é–‹å§‹æ™‚ã¯åˆ¶é™ãƒã‚§ãƒƒã‚¯ã‚’ã‚¹ã‚­ãƒƒãƒ—
     if (!forceStart) {
-      // –â‘è”§ŒÀƒ`ƒFƒbƒNimaxQuestions ‚ª 0 ‚Ìê‡‚Í‘S–â‚È‚Ì‚Å§ŒÀ‚È‚µj
+      // å•é¡Œæ•°åˆ¶é™ãƒã‚§ãƒƒã‚¯ï¼ˆmaxQuestions ãŒ 0 ã®å ´åˆã¯å…¨å•ãªã®ã§åˆ¶é™ãªã—ï¼‰
       const maxQuestionsLimit = maxQuestions === 0 ? currentVocabularyData.length : maxQuestions;
       if (questionCount >= maxQuestionsLimit) {
         setShowResult(true);
@@ -207,14 +207,14 @@ const VocabularyGameApp = () => {
       }
     }
 
-    // —á•¶¨’PŒêƒ‚[ƒh‚Ìê‡‚ÍA—á•¶‚ª‚ ‚é’PŒê‚Ì‚İƒtƒBƒ‹ƒ^ƒŠƒ“ƒO
+    // ä¾‹æ–‡â†’å˜èªãƒ¢ãƒ¼ãƒ‰ã®å ´åˆã¯ã€ä¾‹æ–‡ãŒã‚ã‚‹å˜èªã®ã¿ãƒ•ã‚£ãƒ«ã‚¿ãƒªãƒ³ã‚°
     let availableQuestions = currentVocabularyData.filter(word => !usedQuestions.includes(word.english));
     
     if (questionDirection === 'example-to-en') {
       availableQuestions = availableQuestions.filter(word => word.example && word.example.trim() !== '');
       
       if (availableQuestions.length === 0) {
-        setUploadError('—á•¶ƒ‚[ƒh—p‚Ìƒf[ƒ^‚ª•s‘«‚µ‚Ä‚¢‚Ü‚·BCSVƒtƒ@ƒCƒ‹‚Ì3—ñ–Ú‚É—á•¶‚ğ’Ç‰Á‚µ‚Ä‚­‚¾‚³‚¢B');
+        setUploadError('ä¾‹æ–‡ãƒ¢ãƒ¼ãƒ‰ç”¨ã®ãƒ‡ãƒ¼ã‚¿ãŒä¸è¶³ã—ã¦ã„ã¾ã™ã€‚CSVãƒ•ã‚¡ã‚¤ãƒ«ã®3åˆ—ç›®ã«ä¾‹æ–‡ã‚’è¿½åŠ ã—ã¦ãã ã•ã„ã€‚');
         return;
       }
     }
@@ -224,7 +224,7 @@ const VocabularyGameApp = () => {
       return;
     }
     
-    // —˜—p‰Â”\‚È–â‘è‚ª‚È‚¢ê‡‚ÍƒQ[ƒ€I—¹
+    // åˆ©ç”¨å¯èƒ½ãªå•é¡ŒãŒãªã„å ´åˆã¯ã‚²ãƒ¼ãƒ çµ‚äº†
     if (availableQuestions.length === 0) {
       setShowResult(true);
       return;
@@ -240,14 +240,14 @@ const VocabularyGameApp = () => {
     setTimeLeft(gameMode === 'speed' ? 15 : 30);
     setSpeedBonus(0);
     
-    // 4‘ğ–â‘è‚Ìê‡‚Í‘I‘ğˆ‚ğ¶¬
+    // 4æŠå•é¡Œã®å ´åˆã¯é¸æŠè‚¢ã‚’ç”Ÿæˆ
     if (questionType === 'choice') {
       generateChoices(randomWord);
     } else {
       setOptions([]);
     }
     
-    // “ü—ÍƒtƒB[ƒ‹ƒh‚ÉƒtƒH[ƒJƒXi‰pì•¶‚Ìê‡j
+    // å…¥åŠ›ãƒ•ã‚£ãƒ¼ãƒ«ãƒ‰ã«ãƒ•ã‚©ãƒ¼ã‚«ã‚¹ï¼ˆè‹±ä½œæ–‡ã®å ´åˆï¼‰
     if (questionType === 'writing') {
       setTimeout(() => {
         if (inputRef.current) {
@@ -257,7 +257,7 @@ const VocabularyGameApp = () => {
     }
   };
 
-  // 4‘ğ‚Ì‘I‘ğˆ‚ğ¶¬
+  // 4æŠã®é¸æŠè‚¢ã‚’ç”Ÿæˆ
   const generateChoices = (correctWord) => {
     const wrongAnswers = currentVocabularyData
       .filter(word => word.english !== correctWord.english)
@@ -268,7 +268,7 @@ const VocabularyGameApp = () => {
     setOptions(allChoices);
   };
 
-  // “š‚¦‚ğƒ`ƒFƒbƒNi‰pì•¶—pj
+  // ç­”ãˆã‚’ãƒã‚§ãƒƒã‚¯ï¼ˆè‹±ä½œæ–‡ç”¨ï¼‰
   const checkAnswer = () => {
     if (!currentQuestion || userAnswer.trim() === '') return;
 
@@ -290,9 +290,9 @@ const VocabularyGameApp = () => {
     processAnswer(isAnswerCorrect, userInput);
   };
 
-  // 4‘ğ‰ñ“š‚ğ‘I‘ğ
+  // 4æŠå›ç­”ã‚’é¸æŠ
   const selectChoice = (selectedWord) => {
-    if (selectedChoice !== null) return; // Šù‚É‰ñ“šÏ‚İ
+    if (selectedChoice !== null) return; // æ—¢ã«å›ç­”æ¸ˆã¿
 
     setSelectedChoice(selectedWord);
     
@@ -303,7 +303,7 @@ const VocabularyGameApp = () => {
       isAnswerCorrect = selectedWord.japanese === currentQuestion.japanese;
     }
     
-    // ‘I‘ğ‚µ‚½‰ñ“š‚ğ’¼Ú“n‚·
+    // é¸æŠã—ãŸå›ç­”ã‚’ç›´æ¥æ¸¡ã™
     const selectedAnswer = questionDirection === 'jp-to-en' || questionDirection === 'example-to-en' 
       ? selectedWord.english 
       : selectedWord.japanese;
@@ -311,30 +311,30 @@ const VocabularyGameApp = () => {
     processAnswer(isAnswerCorrect, selectedAnswer);
   };
 
-  // ‰ñ“šŒ‹‰Ê‚ğˆ—
+  // å›ç­”çµæœã‚’å‡¦ç†
   const processAnswer = (isAnswerCorrect, providedAnswer = null) => {
     setIsCorrect(isAnswerCorrect);
 
     if (isAnswerCorrect) {
-      // ³‰ğ‚Ìˆ—
+      // æ­£è§£æ™‚ã®å‡¦ç†
       let points = 10;
       
-      // “ïˆÕ“xƒ{[ƒiƒX
+      // é›£æ˜“åº¦ãƒœãƒ¼ãƒŠã‚¹
       if (currentQuestion.difficulty === 'intermediate') points += 5;
       if (currentQuestion.difficulty === 'advanced') points += 10;
       
-      // ‘¬“xƒ{[ƒiƒX
+      // é€Ÿåº¦ãƒœãƒ¼ãƒŠã‚¹
       const speedBonusPoints = Math.max(0, Math.floor((timeLeft / (gameMode === 'speed' ? 15 : 30)) * 20));
       setSpeedBonus(speedBonusPoints);
       points += speedBonusPoints;
       
-      // ƒRƒ“ƒ{ƒ{[ƒiƒX
+      // ã‚³ãƒ³ãƒœãƒœãƒ¼ãƒŠã‚¹
       points *= comboMultiplier;
       
-      // ƒqƒ“ƒg–¢g—pƒ{[ƒiƒX
+      // ãƒ’ãƒ³ãƒˆæœªä½¿ç”¨ãƒœãƒ¼ãƒŠã‚¹
       if (!showHint) points += 5;
 
-      // –â‘èƒ^ƒCƒvƒ{[ƒiƒXi‰pì•¶‚Ì•û‚ª“ï‚µ‚¢‚Ì‚Åj
+      // å•é¡Œã‚¿ã‚¤ãƒ—ãƒœãƒ¼ãƒŠã‚¹ï¼ˆè‹±ä½œæ–‡ã®æ–¹ãŒé›£ã—ã„ã®ã§ï¼‰
       if (questionType === 'writing') points += 5;
 
       setScore(prev => prev + points);
@@ -342,17 +342,17 @@ const VocabularyGameApp = () => {
       setMaxStreak(prev => Math.max(prev, streak + 1));
       setCorrectCount(prev => prev + 1);
       
-      // ƒRƒ“ƒ{”{—¦XV
+      // ã‚³ãƒ³ãƒœå€ç‡æ›´æ–°
       if (streak >= 4) setComboMultiplier(prev => Math.min(prev + 0.5, 3));
       
     } else {
-      // •s³‰ğ‚Ìˆ—
+      // ä¸æ­£è§£æ™‚ã®å‡¦ç†
       setStreak(0);
       setComboMultiplier(1);
       
-      // ŠÔˆá‚¦‚½’PŒê‚ğ‹L˜^i‘I‘ğ‚µ‚½‰ñ“š‚ğ—Dæg—pj
+      // é–“é•ãˆãŸå˜èªã‚’è¨˜éŒ²ï¼ˆé¸æŠã—ãŸå›ç­”ã‚’å„ªå…ˆä½¿ç”¨ï¼‰
       const userResponseText = providedAnswer || 
-        (questionType === 'writing' ? userAnswer : '–¢‰ñ“š');
+        (questionType === 'writing' ? userAnswer : 'æœªå›ç­”');
       
       const wrongAnswer = {
         word: currentQuestion,
@@ -366,35 +366,35 @@ const VocabularyGameApp = () => {
       setWrongAnswers(prev => [...prev, wrongAnswer]);
     }
 
-    // –â‘è”‚ğ‘‰Á
+    // å•é¡Œæ•°ã‚’å¢—åŠ 
     const newQuestionCount = questionCount + 1;
     setQuestionCount(newQuestionCount);
     
-    // ƒQ[ƒ€I—¹”»’è
+    // ã‚²ãƒ¼ãƒ çµ‚äº†åˆ¤å®š
     const maxQuestionsLimit = maxQuestions === 0 ? currentVocabularyData.length : maxQuestions;
     if (newQuestionCount >= maxQuestionsLimit) {
-      // Ÿ‚Ì–â‘è¶¬‚ğƒXƒLƒbƒv‚µ‚ÄƒQ[ƒ€I—¹
+      // æ¬¡ã®å•é¡Œç”Ÿæˆã‚’ã‚¹ã‚­ãƒƒãƒ—ã—ã¦ã‚²ãƒ¼ãƒ çµ‚äº†
       setTimeout(() => {
         setShowResult(true);
       }, 1500);
     }
   };
 
-  // ƒ^ƒCƒ€ƒAƒEƒgˆ—
+  // ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆå‡¦ç†
   const handleTimeOut = () => {
     setIsCorrect(false);
     setStreak(0);
     setComboMultiplier(1);
     
-    // –â‘è”‚ğ‘‰Á
+    // å•é¡Œæ•°ã‚’å¢—åŠ 
     const newQuestionCount = questionCount + 1;
     setQuestionCount(newQuestionCount);
     
-    // ƒ^ƒCƒ€ƒAƒEƒg‚µ‚½’PŒê‚ğ‹L˜^
+    // ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆã—ãŸå˜èªã‚’è¨˜éŒ²
     if (currentQuestion) {
       const wrongAnswer = {
         word: currentQuestion,
-        userAnswer: 'ƒ^ƒCƒ€ƒAƒEƒg',
+        userAnswer: 'ã‚¿ã‚¤ãƒ ã‚¢ã‚¦ãƒˆ',
         correctAnswer: questionDirection === 'jp-to-en' || questionDirection === 'example-to-en' 
           ? currentQuestion.english 
           : currentQuestion.japanese,
@@ -404,7 +404,7 @@ const VocabularyGameApp = () => {
       setWrongAnswers(prev => [...prev, wrongAnswer]);
     }
     
-    // ƒQ[ƒ€I—¹”»’è
+    // ã‚²ãƒ¼ãƒ çµ‚äº†åˆ¤å®š
     const maxQuestionsLimit = maxQuestions === 0 ? currentVocabularyData.length : maxQuestions;
     if (newQuestionCount >= maxQuestionsLimit) {
       setTimeout(() => {
@@ -413,9 +413,9 @@ const VocabularyGameApp = () => {
     }
   };
 
-  // Ÿ‚Ì–â‘è‚Öi‚Ş
+  // æ¬¡ã®å•é¡Œã¸é€²ã‚€
   const goToNextQuestion = () => {
-    // ƒQ[ƒ€I—¹”»’è
+    // ã‚²ãƒ¼ãƒ çµ‚äº†åˆ¤å®š
     const maxQuestionsLimit = maxQuestions === 0 ? currentVocabularyData.length : maxQuestions;
     if (questionCount >= maxQuestionsLimit) {
       setShowResult(true);
@@ -425,7 +425,7 @@ const VocabularyGameApp = () => {
     generateQuestion();
   };
 
-  // EnterƒL[‚Å‰ñ“š‚Ü‚½‚ÍŸ‚Ì–â‘è‚Ö
+  // Enterã‚­ãƒ¼ã§å›ç­”ã¾ãŸã¯æ¬¡ã®å•é¡Œã¸
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
       if (isCorrect === null && questionType === 'writing') {
@@ -436,9 +436,9 @@ const VocabularyGameApp = () => {
     }
   };
 
-  // ƒQ[ƒ€ŠJn
+  // ã‚²ãƒ¼ãƒ é–‹å§‹
   const startGame = (speed = 'normal') => {
-    // ‘S‚Ä‚Ìó‘Ô‚ğŠ®‘S‚ÉƒŠƒZƒbƒg
+    // å…¨ã¦ã®çŠ¶æ…‹ã‚’å®Œå…¨ã«ãƒªã‚»ãƒƒãƒˆ
     setGameMode(speed);
     setGameStarted(true);
     setShowResult(false);
@@ -459,10 +459,10 @@ const VocabularyGameApp = () => {
     setOptions([]);
     setSelectedChoice(null);
     
-    // useEffect‚Åó‘ÔƒŠƒZƒbƒgŠ®—¹Œã‚É–â‘è¶¬‚³‚ê‚é
+    // useEffectã§çŠ¶æ…‹ãƒªã‚»ãƒƒãƒˆå®Œäº†å¾Œã«å•é¡Œç”Ÿæˆã•ã‚Œã‚‹
   };
 
-  // ƒQ[ƒ€ƒŠƒZƒbƒg
+  // ã‚²ãƒ¼ãƒ ãƒªã‚»ãƒƒãƒˆ
   const resetGame = () => {
     setGameStarted(false);
     setShowResult(false);
@@ -484,7 +484,7 @@ const VocabularyGameApp = () => {
     setSelectedChoice(null);
   };
 
-  // “ïˆÕ“x•Ê‚ÌF
+  // é›£æ˜“åº¦åˆ¥ã®è‰²
   const getDifficultyColor = (difficulty) => {
     switch (difficulty) {
       case 'basic': return 'text-green-600 bg-green-100';
@@ -494,7 +494,7 @@ const VocabularyGameApp = () => {
     }
   };
 
-  // ƒXƒ^[ƒg‰æ–Ê
+  // ã‚¹ã‚¿ãƒ¼ãƒˆç”»é¢
   if (!gameStarted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
@@ -507,16 +507,16 @@ const VocabularyGameApp = () => {
               </div>
             </div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">
-              ‰pŒêŠwKƒQ[ƒ€
+              è‹±èªå­¦ç¿’ã‚²ãƒ¼ãƒ 
             </h1>
-            <p className="text-gray-600">‘½Ê‚ÈŠwKƒ‚[ƒh‚ÅŠy‚µ‚­‰pŒê‚ğƒ}ƒXƒ^[I</p>
+            <p className="text-gray-600">å¤šå½©ãªå­¦ç¿’ãƒ¢ãƒ¼ãƒ‰ã§æ¥½ã—ãè‹±èªã‚’ãƒã‚¹ã‚¿ãƒ¼ï¼</p>
           </div>
           
-          {/* ƒtƒ@ƒCƒ‹ƒAƒbƒvƒ[ƒhƒZƒNƒVƒ‡ƒ“ */}
+          {/* ãƒ•ã‚¡ã‚¤ãƒ«ã‚¢ãƒƒãƒ—ãƒ­ãƒ¼ãƒ‰ã‚»ã‚¯ã‚·ãƒ§ãƒ³ */}
           <div className="mb-8 p-6 bg-gray-50 rounded-2xl">
             <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center justify-center gap-2">
               <Upload className="w-5 h-5" />
-              CSVƒtƒ@ƒCƒ‹‚©‚ç’PŒê‚ğ“Ç‚İ‚İ
+              CSVãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰å˜èªã‚’èª­ã¿è¾¼ã¿
             </h3>
             
             {uploadedFileName ? (
@@ -527,22 +527,22 @@ const VocabularyGameApp = () => {
                     <span className="font-medium">{uploadedFileName}</span>
                   </div>
                   <div className="text-sm text-green-600 mt-1">
-                    {currentVocabularyData.length}ŒÂ‚Ì’PŒê‚ğ“Ç‚İ‚İ‚Ü‚µ‚½
+                    {currentVocabularyData.length}å€‹ã®å˜èªã‚’èª­ã¿è¾¼ã¿ã¾ã—ãŸ
                   </div>
                 </div>
                 <button
                   onClick={resetToDefaultData}
                   className="text-sm text-gray-600 hover:text-gray-800 underline"
                 >
-                  ƒfƒtƒHƒ‹ƒgƒf[ƒ^‚É–ß‚·
+                  ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆãƒ‡ãƒ¼ã‚¿ã«æˆ»ã™
                 </button>
               </div>
             ) : (
               <div className="mb-4">
-                {/* ƒGƒ“ƒR[ƒh‘I‘ğ */}
+                {/* ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰é¸æŠ */}
                 <div className="mb-3">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    •¶šƒGƒ“ƒR[ƒh
+                    æ–‡å­—ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰
                   </label>
                   <select
                     value={encoding}
@@ -575,16 +575,16 @@ const VocabularyGameApp = () => {
                   <div className="flex flex-col items-center gap-2">
                     <Upload className={`w-6 h-6 ${isUploading ? 'text-gray-400' : 'text-indigo-500'}`} />
                     <span className={`text-sm ${isUploading ? 'text-gray-400' : 'text-gray-700'}`}>
-                      {isUploading ? '“Ç‚İ‚İ’†...' : 'CSVƒtƒ@ƒCƒ‹‚ğ‘I‘ğ'}
+                      {isUploading ? 'èª­ã¿è¾¼ã¿ä¸­...' : 'CSVãƒ•ã‚¡ã‚¤ãƒ«ã‚’é¸æŠ'}
                     </span>
                   </div>
                 </label>
                 
                 <div className="text-xs text-gray-500 mt-2 space-y-1">
-                  <p>ƒtƒH[ƒ}ƒbƒg: ‰p’PŒê,“ú–{Œê,—á•¶,—á•¶‚Ì“ú–{Œê–ó</p>
-                  <p>3—ñ–ÚE4—ñ–Ú‚Í—á•¶ƒ‚[ƒh—piÈ—ª‰Âj</p>
-                  <p>1s–Ú‚Íƒwƒbƒ_[s‚Æ‚µ‚Ä©“®ƒXƒLƒbƒv‚³‚ê‚Ü‚·</p>
-                  <p>„§ƒGƒ“ƒR[ƒh: Shift_JIS (“ú–{ŒêExcel•W€)</p>
+                  <p>ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ: è‹±å˜èª,æ—¥æœ¬èª,ä¾‹æ–‡,ä¾‹æ–‡ã®æ—¥æœ¬èªè¨³</p>
+                  <p>3åˆ—ç›®ãƒ»4åˆ—ç›®ã¯ä¾‹æ–‡ãƒ¢ãƒ¼ãƒ‰ç”¨ï¼ˆçœç•¥å¯ï¼‰</p>
+                  <p>1è¡Œç›®ã¯ãƒ˜ãƒƒãƒ€ãƒ¼è¡Œã¨ã—ã¦è‡ªå‹•ã‚¹ã‚­ãƒƒãƒ—ã•ã‚Œã¾ã™</p>
+                  <p>æ¨å¥¨ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰: Shift_JIS (æ—¥æœ¬èªExcelæ¨™æº–)</p>
                 </div>
               </div>
             )}
@@ -599,14 +599,14 @@ const VocabularyGameApp = () => {
             )}
           </div>
           
-          {/* –â‘è”EƒQ[ƒ€ƒ‚[ƒh‘I‘ğ */}
+          {/* å•é¡Œæ•°ãƒ»ã‚²ãƒ¼ãƒ ãƒ¢ãƒ¼ãƒ‰é¸æŠ */}
           <div className="mb-8">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">ƒQ[ƒ€İ’è</h3>
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">ã‚²ãƒ¼ãƒ è¨­å®š</h3>
             
-            {/* o‘è•ûŒü‘I‘ğ */}
+            {/* å‡ºé¡Œæ–¹å‘é¸æŠ */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                o‘è•ûŒü
+                å‡ºé¡Œæ–¹å‘
               </label>
               <div className="grid grid-cols-1 gap-2">
                 <button
@@ -617,7 +617,7 @@ const VocabularyGameApp = () => {
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  “ú–{Œê ¨ ‰pŒê
+                  æ—¥æœ¬èª â†’ è‹±èª
                 </button>
                 <button
                   onClick={() => setQuestionDirection('en-to-jp')}
@@ -627,7 +627,7 @@ const VocabularyGameApp = () => {
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  ‰pŒê ¨ “ú–{Œê
+                  è‹±èª â†’ æ—¥æœ¬èª
                 </button>
                 <button
                   onClick={() => setQuestionDirection('example-to-en')}
@@ -637,16 +637,16 @@ const VocabularyGameApp = () => {
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  —á•¶ ¨ ‰p’PŒê
-                  <div className="text-xs mt-1 opacity-80">‹â‚ÌƒtƒŒ[ƒY®</div>
+                  ä¾‹æ–‡ â†’ è‹±å˜èª
+                  <div className="text-xs mt-1 opacity-80">éŠ€ã®ãƒ•ãƒ¬ãƒ¼ã‚ºå¼</div>
                 </button>
               </div>
             </div>
 
-            {/* –â‘èŒ`®‘I‘ğ */}
+            {/* å•é¡Œå½¢å¼é¸æŠ */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                –â‘èŒ`®
+                å•é¡Œå½¢å¼
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <button
@@ -657,10 +657,10 @@ const VocabularyGameApp = () => {
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  {questionDirection === 'jp-to-en' ? '‰pì•¶' : 
-                   questionDirection === 'en-to-jp' ? '“ú–{Œê“ü—Í' :
-                   'ŒŠ–„‚ß“ü—Í'}
-                  <div className="text-xs mt-1 opacity-80">+5pt ƒ{[ƒiƒX</div>
+                  {questionDirection === 'jp-to-en' ? 'è‹±ä½œæ–‡' : 
+                   questionDirection === 'en-to-jp' ? 'æ—¥æœ¬èªå…¥åŠ›' :
+                   'ç©´åŸ‹ã‚å…¥åŠ›'}
+                  <div className="text-xs mt-1 opacity-80">+5pt ãƒœãƒ¼ãƒŠã‚¹</div>
                 </button>
                 <button
                   onClick={() => setQuestionType('choice')}
@@ -670,16 +670,16 @@ const VocabularyGameApp = () => {
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                   }`}
                 >
-                  4‘ğ–â‘è
-                  <div className="text-xs mt-1 opacity-80">ƒXƒs[ƒfƒB[</div>
+                  4æŠå•é¡Œ
+                  <div className="text-xs mt-1 opacity-80">ã‚¹ãƒ”ãƒ¼ãƒ‡ã‚£ãƒ¼</div>
                 </button>
               </div>
             </div>
             
-            {/* –â‘è”‘I‘ğ */}
+            {/* å•é¡Œæ•°é¸æŠ */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                –â‘è”
+                å•é¡Œæ•°
               </label>
               <div className="grid grid-cols-4 gap-2">
                 {[5, 10, 20, 0].map((num) => (
@@ -692,7 +692,7 @@ const VocabularyGameApp = () => {
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    {num === 0 ? '‘S–â' : `${num}–â`}
+                    {num === 0 ? 'å…¨å•' : `${num}å•`}
                   </button>
                 ))}
               </div>
@@ -702,13 +702,13 @@ const VocabularyGameApp = () => {
           <div className="mb-8 grid grid-cols-2 gap-4 text-sm">
             <div className="bg-gradient-to-r from-green-400 to-blue-500 text-white rounded-lg p-3">
               <div className="font-bold text-lg">{currentVocabularyData.length}</div>
-              <div>û˜^’PŒê</div>
+              <div>åéŒ²å˜èª</div>
             </div>
             <div className="bg-gradient-to-r from-purple-400 to-pink-500 text-white rounded-lg p-3">
               <div className="font-bold text-lg">
                 {maxQuestions === 0 ? currentVocabularyData.length : Math.min(maxQuestions, currentVocabularyData.length)}
               </div>
-              <div>o‘è—\’è</div>
+              <div>å‡ºé¡Œäºˆå®š</div>
             </div>
           </div>
 
@@ -719,9 +719,9 @@ const VocabularyGameApp = () => {
             >
               <div className="flex items-center justify-center gap-2">
                 <Target className="w-5 h-5" />
-                ƒm[ƒ}ƒ‹ƒ‚[ƒh
+                ãƒãƒ¼ãƒãƒ«ãƒ¢ãƒ¼ãƒ‰
               </div>
-              <div className="text-xs opacity-90 mt-1">30•b‚Å‚¶‚Á‚­‚èl‚¦‚é</div>
+              <div className="text-xs opacity-90 mt-1">30ç§’ã§ã˜ã£ãã‚Šè€ƒãˆã‚‹</div>
             </button>
             
             <button
@@ -730,24 +730,24 @@ const VocabularyGameApp = () => {
             >
               <div className="flex items-center justify-center gap-2">
                 <Zap className="w-5 h-5" />
-                ƒXƒs[ƒhƒ‚[ƒh
+                ã‚¹ãƒ”ãƒ¼ãƒ‰ãƒ¢ãƒ¼ãƒ‰
               </div>
-              <div className="text-xs opacity-90 mt-1">15•b‚Ì‚‘¬‰ñ“š</div>
+              <div className="text-xs opacity-90 mt-1">15ç§’ã®é«˜é€Ÿå›ç­”</div>
             </button>
           </div>
 
           <div className="text-xs text-gray-500 space-y-1">
-            <p>? ƒqƒ“ƒg‹@”\‚ÅŠwKƒTƒ|[ƒg</p>
-            <p>? ˜A‘±³‰ğ‚ÅƒRƒ“ƒ{ƒ{[ƒiƒX</p>
-            <p>? ‘¬“š‚ÅƒXƒs[ƒhƒ{[ƒiƒX</p>
-            <p>?? ‰pì•¶‚Å‚³‚ç‚Éƒ{[ƒiƒX</p>
+            <p>? ãƒ’ãƒ³ãƒˆæ©Ÿèƒ½ã§å­¦ç¿’ã‚µãƒãƒ¼ãƒˆ</p>
+            <p>? é€£ç¶šæ­£è§£ã§ã‚³ãƒ³ãƒœãƒœãƒ¼ãƒŠã‚¹</p>
+            <p>? é€Ÿç­”ã§ã‚¹ãƒ”ãƒ¼ãƒ‰ãƒœãƒ¼ãƒŠã‚¹</p>
+            <p>?? è‹±ä½œæ–‡ã§ã•ã‚‰ã«ãƒœãƒ¼ãƒŠã‚¹</p>
           </div>
         </div>
       </div>
     );
   }
 
-  // Œ‹‰Ê‰æ–Ê
+  // çµæœç”»é¢
   if (showResult) {
     const accuracy = questionCount > 0 ? Math.round((correctCount / questionCount) * 100) : 0;
     const avgScore = questionCount > 0 ? Math.round(score / questionCount) : 0;
@@ -758,40 +758,40 @@ const VocabularyGameApp = () => {
           <div className="mb-6">
             <Trophy className="w-20 h-20 mx-auto text-yellow-500 mb-4" />
             <h2 className="text-3xl font-bold text-gray-800 mb-2">
-              {wrongAnswers.length === 0 ? '? ƒp[ƒtƒFƒNƒgI' : 'ƒQ[ƒ€I—¹I'}
+              {wrongAnswers.length === 0 ? '? ãƒ‘ãƒ¼ãƒ•ã‚§ã‚¯ãƒˆï¼' : 'ã‚²ãƒ¼ãƒ çµ‚äº†ï¼'}
             </h2>
-            <div className="text-lg text-gray-600">‚¨”æ‚ê‚³‚Ü‚Å‚µ‚½I</div>
+            <div className="text-lg text-gray-600">ãŠç–²ã‚Œã•ã¾ã§ã—ãŸï¼</div>
           </div>
           
           <div className="space-y-4 mb-8">
             <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl p-6">
               <div className="text-4xl font-bold">{score.toLocaleString()}</div>
-              <div className="text-sm opacity-90">‘ƒXƒRƒA</div>
+              <div className="text-sm opacity-90">ç·ã‚¹ã‚³ã‚¢</div>
             </div>
             
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-green-50 rounded-lg p-4">
                 <div className="text-2xl font-bold text-green-600">{accuracy}%</div>
-                <div className="text-xs text-green-500">³“š—¦</div>
+                <div className="text-xs text-green-500">æ­£ç­”ç‡</div>
               </div>
               <div className="bg-orange-50 rounded-lg p-4">
                 <div className="text-2xl font-bold text-orange-600">{maxStreak}</div>
-                <div className="text-xs text-orange-500">Å‘å˜A‘±³‰ğ</div>
+                <div className="text-xs text-orange-500">æœ€å¤§é€£ç¶šæ­£è§£</div>
               </div>
             </div>
             
             <div className="grid grid-cols-3 gap-2 text-sm">
               <div className="bg-blue-50 rounded p-2">
                 <div className="font-bold text-blue-600">{correctCount}</div>
-                <div className="text-xs text-blue-500">³‰ğ”</div>
+                <div className="text-xs text-blue-500">æ­£è§£æ•°</div>
               </div>
               <div className="bg-purple-50 rounded p-2">
                 <div className="font-bold text-purple-600">{questionCount}</div>
-                <div className="text-xs text-purple-500">‘–â‘è”</div>
+                <div className="text-xs text-purple-500">ç·å•é¡Œæ•°</div>
               </div>
               <div className="bg-pink-50 rounded p-2">
                 <div className="font-bold text-pink-600">{avgScore}</div>
-                <div className="text-xs text-pink-500">•½‹Ï“¾“_</div>
+                <div className="text-xs text-pink-500">å¹³å‡å¾—ç‚¹</div>
               </div>
             </div>
             
@@ -799,18 +799,18 @@ const VocabularyGameApp = () => {
               <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white rounded-lg p-3">
                 <div className="flex items-center justify-center gap-2">
                   <Award className="w-5 h-5" />
-                  <span className="font-bold">ƒp[ƒtƒFƒNƒgƒ{[ƒiƒX +500pt!</span>
+                  <span className="font-bold">ãƒ‘ãƒ¼ãƒ•ã‚§ã‚¯ãƒˆãƒœãƒ¼ãƒŠã‚¹ +500pt!</span>
                 </div>
               </div>
             )}
           </div>
 
-          {/* ŠÔˆá‚¦‚½’PŒêˆê—— */}
+          {/* é–“é•ãˆãŸå˜èªä¸€è¦§ */}
           {wrongAnswers.length > 0 && (
             <div className="mb-8">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <BookOpen className="w-5 h-5" />
-                •œK—pFŠÔˆá‚¦‚½’PŒê ({wrongAnswers.length}ŒÂ)
+                å¾©ç¿’ç”¨ï¼šé–“é•ãˆãŸå˜èª ({wrongAnswers.length}å€‹)
               </h3>
               <div className="bg-red-50 border border-red-200 rounded-xl p-4 max-h-60 overflow-y-auto">
                 <div className="space-y-3">
@@ -828,18 +828,18 @@ const VocabularyGameApp = () => {
                       </div>
                       <div className="text-sm space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-green-600 font-medium">³‰ğ:</span>
+                          <span className="text-green-600 font-medium">æ­£è§£:</span>
                           <span className="text-green-700 font-bold">{wrong.correctAnswer}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-red-600 font-medium">‚ ‚È‚½‚Ì‰ñ“š:</span>
+                          <span className="text-red-600 font-medium">ã‚ãªãŸã®å›ç­”:</span>
                           <span className="text-red-700">{wrong.userAnswer}</span>
                         </div>
                         <div className="text-xs text-gray-500">
-                          {wrong.questionDirection === 'jp-to-en' ? '“ú¨‰p' : 
-                           wrong.questionDirection === 'en-to-jp' ? '‰p¨“ú' :
-                           '—á•¶¨‰p'} ? 
-                          {wrong.questionType === 'writing' ? ' ‹Lq®' : ' 4‘ğ'}
+                          {wrong.questionDirection === 'jp-to-en' ? 'æ—¥â†’è‹±' : 
+                           wrong.questionDirection === 'en-to-jp' ? 'è‹±â†’æ—¥' :
+                           'ä¾‹æ–‡â†’è‹±'} ? 
+                          {wrong.questionType === 'writing' ? ' è¨˜è¿°å¼' : ' 4æŠ'}
                         </div>
                       </div>
                     </div>
@@ -847,7 +847,7 @@ const VocabularyGameApp = () => {
                 </div>
               </div>
               <div className="text-xs text-gray-500 mt-2 text-center">
-                ? ‚±‚ê‚ç‚Ì’PŒê‚ğd“_“I‚É•œK‚µ‚Ü‚µ‚å‚¤
+                ? ã“ã‚Œã‚‰ã®å˜èªã‚’é‡ç‚¹çš„ã«å¾©ç¿’ã—ã¾ã—ã‚‡ã†
               </div>
             </div>
           )}
@@ -858,14 +858,14 @@ const VocabularyGameApp = () => {
               className="bg-gray-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-gray-700 transition-all duration-200 flex items-center justify-center gap-2"
             >
               <RotateCcw className="w-4 h-4" />
-              ƒ‚[ƒh‘I‘ğ
+              ãƒ¢ãƒ¼ãƒ‰é¸æŠ
             </button>
             <button
               onClick={() => startGame(gameMode)}
               className="bg-indigo-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-indigo-700 transition-all duration-200 flex items-center justify-center gap-2"
             >
               <Target className="w-4 h-4" />
-              “¯‚¶ƒ‚[ƒh
+              åŒã˜ãƒ¢ãƒ¼ãƒ‰
             </button>
           </div>
         </div>
@@ -873,39 +873,39 @@ const VocabularyGameApp = () => {
     );
   }
 
-  // ƒQ[ƒ€‰æ–Ê
+  // ã‚²ãƒ¼ãƒ ç”»é¢
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-4">
       <div className="max-w-4xl mx-auto">
-        {/* ƒwƒbƒ_[ */}
+        {/* ãƒ˜ãƒƒãƒ€ãƒ¼ */}
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl p-4 mb-6 border border-white/20">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center gap-3">
               <h1 className="text-xl font-bold text-white">
-                {questionDirection === 'jp-to-en' ? '‰pì•¶ƒ`ƒƒƒŒƒ“ƒW' : 
-                 questionDirection === 'en-to-jp' ? '‰pŒêŠwKƒNƒCƒY' : 
-                 '—á•¶ŒŠ–„‚ßƒNƒCƒY'}
+                {questionDirection === 'jp-to-en' ? 'è‹±ä½œæ–‡ãƒãƒ£ãƒ¬ãƒ³ã‚¸' : 
+                 questionDirection === 'en-to-jp' ? 'è‹±èªå­¦ç¿’ã‚¯ã‚¤ã‚º' : 
+                 'ä¾‹æ–‡ç©´åŸ‹ã‚ã‚¯ã‚¤ã‚º'}
               </h1>
               <div className="flex items-center gap-2 text-sm">
                 <div className="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs">
                   {gameMode === 'speed' ? 'SPEED' : 'NORMAL'}
                 </div>
                 <div className="bg-purple-500 text-white px-2 py-1 rounded-full text-xs">
-                  {questionDirection === 'jp-to-en' ? '“ú¨‰p' : 
-                   questionDirection === 'en-to-jp' ? '‰p¨“ú' : 
-                   '—á•¶¨‰p'}
+                  {questionDirection === 'jp-to-en' ? 'æ—¥â†’è‹±' : 
+                   questionDirection === 'en-to-jp' ? 'è‹±â†’æ—¥' : 
+                   'ä¾‹æ–‡â†’è‹±'}
                 </div>
                 <div className="bg-green-500 text-white px-2 py-1 rounded-full text-xs">
                   {questionType === 'writing' ? 
-                    (questionDirection === 'jp-to-en' ? '‰pì•¶' : 
-                     questionDirection === 'en-to-jp' ? '“ú–{Œê' : 
-                     'ŒŠ–„‚ß') : '4‘ğ'}
+                    (questionDirection === 'jp-to-en' ? 'è‹±ä½œæ–‡' : 
+                     questionDirection === 'en-to-jp' ? 'æ—¥æœ¬èª' : 
+                     'ç©´åŸ‹ã‚') : '4æŠ'}
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-white font-bold text-lg">
-                ‘æ{Math.min(questionCount + 1, maxQuestions === 0 ? currentVocabularyData.length : maxQuestions)}–â / ‘S{maxQuestions === 0 ? currentVocabularyData.length : maxQuestions}–â
+                ç¬¬{Math.min(questionCount + 1, maxQuestions === 0 ? currentVocabularyData.length : maxQuestions)}å• / å…¨{maxQuestions === 0 ? currentVocabularyData.length : maxQuestions}å•
               </div>
               <button
                 onClick={resetGame}
@@ -919,24 +919,24 @@ const VocabularyGameApp = () => {
           <div className="grid grid-cols-4 gap-4 mb-4">
             <div className="text-center">
               <div className="text-2xl font-bold text-yellow-400">{score.toLocaleString()}</div>
-              <div className="text-xs text-white/70">ƒXƒRƒA</div>
+              <div className="text-xs text-white/70">ã‚¹ã‚³ã‚¢</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-orange-400 flex items-center justify-center gap-1">
                 {streak}
                 {streak >= 5 && <Zap className="w-4 h-4" />}
               </div>
-              <div className="text-xs text-white/70">˜A‘±³‰ğ</div>
+              <div className="text-xs text-white/70">é€£ç¶šæ­£è§£</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-purple-400">
-                {comboMultiplier > 1 ? `~${comboMultiplier}` : '~1'}
+                {comboMultiplier > 1 ? `Ã—${comboMultiplier}` : 'Ã—1'}
               </div>
-              <div className="text-xs text-white/70">ƒRƒ“ƒ{</div>
+              <div className="text-xs text-white/70">ã‚³ãƒ³ãƒœ</div>
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-green-400">{correctCount}/{questionCount}</div>
-              <div className="text-xs text-white/70">³‰ğ—¦</div>
+              <div className="text-xs text-white/70">æ­£è§£ç‡</div>
             </div>
           </div>
           
@@ -945,14 +945,14 @@ const VocabularyGameApp = () => {
               <div className={`text-2xl font-bold ${timeLeft <= 5 ? 'text-red-400 animate-pulse' : 'text-blue-400'}`}>
                 {timeLeft}
               </div>
-              <div className="text-xs text-white/70">c‚èŠÔ</div>
+              <div className="text-xs text-white/70">æ®‹ã‚Šæ™‚é–“</div>
             </div>
           </div>
 
-          {/* i“xƒo[ */}
+          {/* é€²åº¦ãƒãƒ¼ */}
           <div className="mt-4">
             <div className="flex justify-between text-xs text-white/70 mb-1">
-              <span>i“x</span>
+              <span>é€²åº¦</span>
               <span>{Math.min(questionCount, maxQuestions === 0 ? currentVocabularyData.length : maxQuestions)}/{maxQuestions === 0 ? currentVocabularyData.length : maxQuestions}</span>
             </div>
             <div className="w-full bg-white/20 rounded-full h-2">
@@ -964,10 +964,10 @@ const VocabularyGameApp = () => {
           </div>
         </div>
 
-        {/* –â‘èƒJ[ƒh */}
+        {/* å•é¡Œã‚«ãƒ¼ãƒ‰ */}
         {currentQuestion && (
           <div className="bg-white rounded-2xl shadow-2xl p-8 mb-6 relative overflow-hidden">
-            {/* ƒoƒbƒNƒOƒ‰ƒEƒ“ƒhƒGƒtƒFƒNƒg */}
+            {/* ãƒãƒƒã‚¯ã‚°ãƒ©ã‚¦ãƒ³ãƒ‰ã‚¨ãƒ•ã‚§ã‚¯ãƒˆ */}
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 to-purple-50 opacity-50"></div>
             
             <div className="relative z-10">
@@ -978,7 +978,7 @@ const VocabularyGameApp = () => {
                   </div>
                   {comboMultiplier > 1 && (
                     <div className="bg-gradient-to-r from-orange-400 to-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
-                      {comboMultiplier}~ COMBO!
+                      {comboMultiplier}Ã— COMBO!
                     </div>
                   )}
                 </div>
@@ -990,36 +990,36 @@ const VocabularyGameApp = () => {
                 </h2>
                 <p className="text-gray-600 text-lg">
                   {questionDirection === 'jp-to-en' ? 
-                    (questionType === 'writing' ? '‰pŒê‚Å“š‚¦‚Ä‚­‚¾‚³‚¢' : '‰pŒê‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢') :
+                    (questionType === 'writing' ? 'è‹±èªã§ç­”ãˆã¦ãã ã•ã„' : 'è‹±èªã‚’é¸æŠã—ã¦ãã ã•ã„') :
                    questionDirection === 'en-to-jp' ?
-                    (questionType === 'writing' ? '“ú–{Œê‚Å“š‚¦‚Ä‚­‚¾‚³‚¢' : '“ú–{Œê‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢') :
-                    (questionType === 'writing' ? '‹ó—“‚É“ü‚é‰p’PŒê‚ğ“š‚¦‚Ä‚­‚¾‚³‚¢' : '‹ó—“‚É“ü‚é‰p’PŒê‚ğ‘I‘ğ‚µ‚Ä‚­‚¾‚³‚¢')
+                    (questionType === 'writing' ? 'æ—¥æœ¬èªã§ç­”ãˆã¦ãã ã•ã„' : 'æ—¥æœ¬èªã‚’é¸æŠã—ã¦ãã ã•ã„') :
+                    (questionType === 'writing' ? 'ç©ºæ¬„ã«å…¥ã‚‹è‹±å˜èªã‚’ç­”ãˆã¦ãã ã•ã„' : 'ç©ºæ¬„ã«å…¥ã‚‹è‹±å˜èªã‚’é¸æŠã—ã¦ãã ã•ã„')
                   }
                 </p>
                 
-                {/* —á•¶ƒ‚[ƒh‚Ìê‡‚Í—á•¶‚Ì“ú–{Œê–ó‚Æ’PŒê‚ÌˆÓ–¡‚ğ•\¦ */}
+                {/* ä¾‹æ–‡ãƒ¢ãƒ¼ãƒ‰ã®å ´åˆã¯ä¾‹æ–‡ã®æ—¥æœ¬èªè¨³ã¨å˜èªã®æ„å‘³ã‚’è¡¨ç¤º */}
                 {questionDirection === 'example-to-en' && (
                   <div className="mt-4 space-y-3">
-                    {/* —á•¶‚Ì“ú–{Œê–ó */}
+                    {/* ä¾‹æ–‡ã®æ—¥æœ¬èªè¨³ */}
                     {currentQuestion.example_jp && (
                       <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
                         <p className="text-blue-800 text-sm">
-                          ?? <span className="font-medium">—á•¶–ó:</span> {currentQuestion.example_jp}
+                          ?? <span className="font-medium">ä¾‹æ–‡è¨³:</span> {currentQuestion.example_jp}
                         </p>
                       </div>
                     )}
                     
-                    {/* ‹ó—“‚É“ü‚é’PŒê‚ÌˆÓ–¡ */}
+                    {/* ç©ºæ¬„ã«å…¥ã‚‹å˜èªã®æ„å‘³ */}
                     <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
                       <p className="text-green-800 text-sm">
-                        ? <span className="font-medium">‹ó—“‚Ì’PŒê‚ÌˆÓ–¡:</span> {currentQuestion.japanese}
+                        ? <span className="font-medium">ç©ºæ¬„ã®å˜èªã®æ„å‘³:</span> {currentQuestion.japanese}
                       </p>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* “ü—ÍƒGƒŠƒAE‘I‘ğˆƒGƒŠƒA */}
+              {/* å…¥åŠ›ã‚¨ãƒªã‚¢ãƒ»é¸æŠè‚¢ã‚¨ãƒªã‚¢ */}
               {questionType === 'writing' ? (
                 <div className="max-w-md mx-auto mb-6">
                   <input
@@ -1028,9 +1028,9 @@ const VocabularyGameApp = () => {
                     value={userAnswer}
                     onChange={(e) => setUserAnswer(e.target.value)}
                     onKeyPress={handleKeyPress}
-                    placeholder={questionDirection === 'jp-to-en' ? '‰p’PŒê‚ğ“ü—Í...' : 
-                               questionDirection === 'en-to-jp' ? '“ú–{Œê‚ğ“ü—Í...' :
-                               '‹ó—“‚É“ü‚é‰p’PŒê‚ğ“ü—Í...'}
+                    placeholder={questionDirection === 'jp-to-en' ? 'è‹±å˜èªã‚’å…¥åŠ›...' : 
+                               questionDirection === 'en-to-jp' ? 'æ—¥æœ¬èªã‚’å…¥åŠ›...' :
+                               'ç©ºæ¬„ã«å…¥ã‚‹è‹±å˜èªã‚’å…¥åŠ›...'}
                     disabled={isCorrect !== null}
                     className="w-full p-4 text-xl text-center border-2 border-gray-300 rounded-xl focus:border-indigo-500 focus:outline-none transition-all duration-200 bg-white shadow-inner"
                   />
@@ -1080,7 +1080,7 @@ const VocabularyGameApp = () => {
                 </div>
               )}
 
-              {/* ƒ{ƒ^ƒ“ */}
+              {/* ãƒœã‚¿ãƒ³ */}
               <div className="flex justify-center gap-4 mb-6">
                 {isCorrect === null ? (
                   <>
@@ -1090,7 +1090,7 @@ const VocabularyGameApp = () => {
                         disabled={userAnswer.trim() === ''}
                         className="bg-indigo-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-indigo-700 transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:transform-none shadow-lg"
                       >
-                        ‰ñ“š‚·‚é
+                        å›ç­”ã™ã‚‹
                       </button>
                     )}
                     
@@ -1100,7 +1100,7 @@ const VocabularyGameApp = () => {
                         className="bg-yellow-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-yellow-600 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center gap-2"
                       >
                         <Lightbulb className="w-4 h-4" />
-                        ƒqƒ“ƒg
+                        ãƒ’ãƒ³ãƒˆ
                       </button>
                     )}
                   </>
@@ -1109,24 +1109,24 @@ const VocabularyGameApp = () => {
                     onClick={goToNextQuestion}
                     className="bg-green-600 text-white px-8 py-3 rounded-xl font-semibold hover:bg-green-700 transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center gap-2"
                   >
-                    Ÿ‚Ì–â‘è‚Ö
+                    æ¬¡ã®å•é¡Œã¸
                     <Target className="w-4 h-4" />
                   </button>
                 )}
               </div>
 
-              {/* ƒqƒ“ƒg•\¦ */}
+              {/* ãƒ’ãƒ³ãƒˆè¡¨ç¤º */}
               {showHint && questionType === 'writing' && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6 text-center">
                   <div className="text-yellow-800">
                     ? {questionDirection === 'jp-to-en' ? currentQuestion.hint : 
-                        questionDirection === 'en-to-jp' ? `u${currentQuestion.english}v‚ÌˆÓ–¡‚Íu${currentQuestion.japanese}v` :
-                        `‹ó—“‚Í${currentQuestion.english.length}•¶š‚Ì’PŒê‚Å‚·`}
+                        questionDirection === 'en-to-jp' ? `ã€Œ${currentQuestion.english}ã€ã®æ„å‘³ã¯ã€Œ${currentQuestion.japanese}ã€` :
+                        `ç©ºæ¬„ã¯${currentQuestion.english.length}æ–‡å­—ã®å˜èªã§ã™`}
                   </div>
                 </div>
               )}
 
-              {/* ƒtƒB[ƒhƒoƒbƒN */}
+              {/* ãƒ•ã‚£ãƒ¼ãƒ‰ãƒãƒƒã‚¯ */}
               {isCorrect !== null && (
                 <div className={`p-6 rounded-xl text-center ${
                   isCorrect ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
@@ -1135,12 +1135,12 @@ const VocabularyGameApp = () => {
                     isCorrect ? 'text-green-800' : 'text-red-800'
                   }`}>
                     {isCorrect ? <CheckCircle className="w-6 h-6" /> : <XCircle className="w-6 h-6" />}
-                    {isCorrect ? '³‰ğI' : timeLeft === 0 ? 'ƒ^ƒCƒ€ƒAƒbƒvI' : '•s³‰ğ'}
+                    {isCorrect ? 'æ­£è§£ï¼' : timeLeft === 0 ? 'ã‚¿ã‚¤ãƒ ã‚¢ãƒƒãƒ—ï¼' : 'ä¸æ­£è§£'}
                   </div>
                   
                   {!isCorrect && (
                     <div className="text-gray-700 mb-2">
-                      ³‰ğ: <span className="font-bold text-lg">
+                      æ­£è§£: <span className="font-bold text-lg">
                         {questionDirection === 'jp-to-en' || questionDirection === 'example-to-en' 
                           ? currentQuestion.english 
                           : currentQuestion.japanese}
@@ -1150,16 +1150,16 @@ const VocabularyGameApp = () => {
                   
                   {isCorrect && (
                     <div className="space-y-1 text-sm text-green-700">
-                      {speedBonus > 0 && <div>? ƒXƒs[ƒhƒ{[ƒiƒX: +{speedBonus}pt</div>}
-                      {!showHint && <div>? ƒqƒ“ƒg–¢g—pƒ{[ƒiƒX: +5pt</div>}
-                      {questionType === 'writing' && <div>?? ‰pì•¶ƒ{[ƒiƒX: +5pt</div>}
-                      {comboMultiplier > 1 && <div>? ƒRƒ“ƒ{ƒ{[ƒiƒX: ~{comboMultiplier}</div>}
-                      {streak >= 5 && <div>? ˜A‘±³‰ğƒ{[ƒiƒX!</div>}
+                      {speedBonus > 0 && <div>? ã‚¹ãƒ”ãƒ¼ãƒ‰ãƒœãƒ¼ãƒŠã‚¹: +{speedBonus}pt</div>}
+                      {!showHint && <div>? ãƒ’ãƒ³ãƒˆæœªä½¿ç”¨ãƒœãƒ¼ãƒŠã‚¹: +5pt</div>}
+                      {questionType === 'writing' && <div>?? è‹±ä½œæ–‡ãƒœãƒ¼ãƒŠã‚¹: +5pt</div>}
+                      {comboMultiplier > 1 && <div>? ã‚³ãƒ³ãƒœãƒœãƒ¼ãƒŠã‚¹: Ã—{comboMultiplier}</div>}
+                      {streak >= 5 && <div>? é€£ç¶šæ­£è§£ãƒœãƒ¼ãƒŠã‚¹!</div>}
                     </div>
                   )}
                   
                   <div className="text-sm text-gray-600 mt-3">
-                    {questionType === 'writing' ? 'EnterƒL[‚Å‚àŸ‚Éi‚ß‚Ü‚·' : '‘I‘ğˆ‚ğƒNƒŠƒbƒN‚µ‚Ä‰ñ“š'}
+                    {questionType === 'writing' ? 'Enterã‚­ãƒ¼ã§ã‚‚æ¬¡ã«é€²ã‚ã¾ã™' : 'é¸æŠè‚¢ã‚’ã‚¯ãƒªãƒƒã‚¯ã—ã¦å›ç­”'}
                   </div>
                 </div>
               )}
