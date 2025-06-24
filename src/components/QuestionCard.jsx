@@ -139,8 +139,15 @@ const QuestionCard = ({
               value={userAnswer}
               onChange={(e) => setUserAnswer(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' && userAnswer.trim() !== '' && isCorrect === null) {
-                  onCheckAnswer();
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  e.stopPropagation();
+
+                  if (userAnswer.trim() !== '' && isCorrect === null) {
+                    onCheckAnswer();
+                  } else if (isCorrect !== null) {
+                    onGoToNextQuestion();
+                  }
                 }
               }}
               placeholder={getPlaceholderText()}
@@ -250,9 +257,16 @@ const QuestionCard = ({
             </div>
             
             <div className="text-gray-700 mb-2">
-              正解: <span className="font-bold text-lg">
-                {getCorrectAnswer()}
+              正解: <span className="font-bold text-lg text-blue-600">
+                {questionDirection === 'jp-to-en' || questionDirection === 'example-to-en' 
+                  ? currentQuestion.english 
+                  : currentQuestion.japanese}
               </span>
+            </div>
+            
+            {/* デバッグ情報 */}
+            <div className="text-xs text-gray-500 mb-2">
+              [DEBUG] questionDirection: {questionDirection}, questionType: {questionType}, english: {currentQuestion.english}, japanese: {currentQuestion.japanese}
             </div>
             
             {isCorrect && (

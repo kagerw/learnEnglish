@@ -226,6 +226,9 @@ const VocabularyGameApp = () => {
     const handleGlobalKeyPress = (e) => {
       if (!gameStarted || showResult) return;
       
+      // 入力フィールドからのEnterは完全スルー
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      
       if (e.key === 'Enter') {
         if (isCorrect === null && questionType === 'writing' && userAnswer.trim() !== '') {
           checkAnswer();
